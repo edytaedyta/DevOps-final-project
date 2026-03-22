@@ -1,0 +1,7 @@
+applications:
+  - name: django-app
+    repoURL: https://github.com/LaResistancePL/DevOps-final-project.git
+    path: charts/django-app
+    targetRevision: main
+    namespace: app
+repositories: []

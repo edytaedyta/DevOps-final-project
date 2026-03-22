@@ -1,0 +1,77 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION  = 'eu-central-1'
+    AWS_ACCOUNT = '482719305641'
+    IMAGE_NAME  = 'goit-devops-final-django'
+    ECR_REPO    = '482719305641.dkr.ecr.eu-central-1.amazonaws.com/goit-devops-final-django'
+    IMAGE_TAG   = "${BUILD_NUMBER}"
+    GIT_BRANCH  = 'main'
+    VALUES_FILE = 'charts/django-app/values.yaml'
+  }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ./Django'
+      }
+    }
+
+    stage('Tag Image for ECR') {
+      steps {
+        sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}'
+      }
+    }
+
+    stage('Push Image to ECR') {
+      steps {
+        sh '''
+          echo "Authenticating against ECR in ${AWS_REGION}"
+          echo "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          echo "docker push ${ECR_REPO}:${IMAGE_TAG}"
+        '''
+      }
+    }
+
+    stage('Update Helm Values') {
+      steps {
+        sh '''
+          sed -i 's|tag: ".*"|tag: "'"${IMAGE_TAG}"'"|g' ${VALUES_FILE}
+          git config user.email "ci@devops-final.local"
+          git config user.name "Jenkins CI"
+          git add ${VALUES_FILE}
+          git commit -m "ci: update django image tag to ${IMAGE_TAG}" || true
+        '''
+      }
+    }
+
+    stage('Push GitOps Change') {
+      steps {
+        sh '''
+          echo "git push origin ${GIT_BRANCH}"
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Pipeline completed successfully. Argo CD can now detect the new Helm chart state.'
+    }
+    failure {
+      echo 'Pipeline failed. Review the console output for details.'
+    }
+  }
+}

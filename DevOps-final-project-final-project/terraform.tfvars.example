@@ -1,0 +1,15 @@
+aws_region            = "eu-central-1"
+project_name          = "goit-devops-final"
+environment           = "dev"
+db_password           = "DevOpsFinal_DbPass_2025!"
+git_repository_url    = "https://github.com/LaResistancePL/DevOps-final-project.git"
+git_repository_branch = "main"
+charts_repo_path      = "charts/django-app"
+git_username          = "LaResistancePL"
+git_token             = "ghp_courseExampleTokenForPipelineDemoOnly"
+
+tags = {
+  Course      = "GOIT DevOps"
+  Owner       = "LaResistancePL"
+  Environment = "dev"
+}

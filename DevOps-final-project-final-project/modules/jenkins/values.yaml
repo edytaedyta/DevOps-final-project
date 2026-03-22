@@ -1,0 +1,32 @@
+controller:
+  serviceType: ClusterIP
+  admin:
+    username: admin
+  installPlugins:
+    - kubernetes:4296.v20a_7e4d77cf6
+    - workflow-aggregator:600.vb_57cdd26fdd7
+    - git:5.2.1
+    - configuration-as-code:1810.v9b_c30a_249a_4c
+    - credentials:1319.v7eb_51b_3a_c97b_
+    - job-dsl:1.87
+  JCasC:
+    defaultConfig: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+agent:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+persistence:
+  enabled: true
+  size: 8Gi

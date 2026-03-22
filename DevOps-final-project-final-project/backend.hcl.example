@@ -1,0 +1,5 @@
+bucket         = "goit-finalproj-tfstate-euc1-2025"
+key            = "envs/dev/final-project/terraform.tfstate"
+region         = "eu-central-1"
+dynamodb_table = "tf-locks-goit-finalproj"
+encrypt        = true

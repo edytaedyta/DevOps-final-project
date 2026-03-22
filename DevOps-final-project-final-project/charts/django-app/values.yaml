@@ -1,0 +1,52 @@
+replicaCount: 2
+
+image:
+  repository: 482719305641.dkr.ecr.eu-central-1.amazonaws.com/goit-devops-final-django
+  tag: "17"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: app.devops-course.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+
+env:
+  DJANGO_SETTINGS_MODULE: "app.settings"
+  DJANGO_DEBUG: "false"
+  DB_HOST: "goit-final-db.c7u2k9m4x8pl.eu-central-1.rds.amazonaws.com"
+  DB_PORT: "3306"
+  DB_NAME: "appdb"
+  DB_USER: "app_user"
+
+secretEnv:
+  DJANGO_SECRET_KEY: "django-insecure-goit-devops-final-key"
+  DB_PASSWORD: "DevOpsFinal_DbPass_2025!"
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  path: /metrics
